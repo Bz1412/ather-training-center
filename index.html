@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ather Training Center</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-800 h-screen flex justify-center items-center font-sans">
+
+    <!-- หน้าต่างศูนย์ฝึก Ather -->
+    <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col h-[80vh] overflow-hidden">
+        <!-- Header -->
+        <div class="bg-slate-900 text-white p-5 flex justify-between items-center shadow-md">
+            <div>
+                <h2 class="text-xl font-black">🧠 ศูนย์ฝึกสมอง Ather AI</h2>
+                <p class="text-xs text-emerald-400 font-bold mt-1" id="status-text">กำลังโหลดสมองจาก Google Sheets...</p>
+            </div>
+        </div>
+
+        <!-- Chat Area -->
+        <div id="chat-messages" class="flex-1 p-6 overflow-y-auto bg-slate-50 space-y-4 no-scrollbar flex flex-col">
+            <div class="flex gap-3 self-start max-w-[90%]">
+                <div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0">🐾</div>
+                <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200">
+                    โหลดสมองเสร็จแล้วเมี๊ยว! ลองพิมพ์ถามปัญหาดู หรือพิมพ์ <br><b>"สอน [ชื่อปัญหา] = [วิธีแก้]"</b><br> เพื่อสอนให้ Ather ฉลาดขึ้นได้เลยเมี๊ยว!
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Area -->
+        <div class="p-4 bg-white border-t-2 border-slate-100 flex gap-2">
+            <input type="text" id="chat-input" placeholder="เช่น: สอน ลืมรหัสผ่าน = ให้กดปุ่ม Reset Password"
+                class="flex-1 p-3 border-2 border-slate-200 rounded-xl text-sm outline-none focus:border-slate-800"
+                onkeypress="if(event.key === 'Enter') handleChatSubmit()">
+            <button onclick="handleChatSubmit()"
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition">ส่ง</button>
+        </div>
+    </div>
+
+    <script>
+        // 🚨 เอา URL ที่ได้จาก Google Apps Script มาวางตรงนี้!
+        const API_URL = 'https://script.google.com/macros/s/AKfycbzs3mrrbz4z1LCLUiFEizY84HhOdG7v0YGB3DiLkLdDkNcaNaOtdcorKMK2F7cuuCtX6w/exec';
+        
+        let atherBrain = [];
+
+        // ฟังก์ชันดึงข้อมูลสมองจาก Sheets
+        async function loadBrain() {
+            try {
+                const res = await fetch(API_URL);
+                atherBrain = await res.json();
+                document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
+            } catch (err) {
+                document.getElementById('status-text').innerHTML = `🔴 โหลดสมองไม่สำเร็จ`;
+            }
+        }
+
+        function appendChatMessage(sender, text) {
+            const container = document.getElementById('chat-messages');
+            const div = document.createElement('div');
+            if (sender === 'user') {
+                div.className = 'flex gap-3 self-end max-w-[85%]';
+                div.innerHTML = `<div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-sm text-sm shadow-sm">${text}</div>`;
+            } else {
+                div.className = 'flex gap-3 self-start max-w-[90%]';
+                div.innerHTML = `<div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0">🐾</div>
+                                 <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200">${text}</div>`;
+            }
+            container.appendChild(div);
+            container.scrollTop = container.scrollHeight;
+        }
+
+        async function handleChatSubmit() {
+            const inputEl = document.getElementById('chat-input');
+            const text = inputEl.value.trim();
+            if (!text) return;
+
+            appendChatMessage('user', text);
+            inputEl.value = '';
+
+            // 🌟 1. โหมดเรียนรู้ (รูปแบบ: สอน คำถาม = คำตอบ)
+            if (text.startsWith('สอน ')) {
+                const parts = text.substring(4).split('=');
+                if (parts.length >= 2) {
+                    const keyword = parts[0].trim();
+                    const action = parts.slice(1).join('=').trim();
+                    
+                    appendChatMessage('bot', `⏳ กำลังจดลงสมอง (Google Sheets) แป๊บนะเมี๊ยว...`);
+                    
+                    try {
+                        await fetch(API_URL, {
+                            method: 'POST',
+                            body: JSON.stringify({ keyword, action })
+                        });
+                        
+                        // แอบเอาเข้าสมองในเว็บเลย จะได้ไม่ต้องดึงใหม่ทั้งหมด
+                        atherBrain.push({ keyword, action });
+                        appendChatMessage('bot', `✨ Ather จำเข้าสมองแล้วเมี๊ยว! ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
+                        document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
+                    } catch (e) {
+                        appendChatMessage('bot', `❌ จดไม่สำเร็จเมี๊ยว อินเทอร์เน็ตอาจจะมีปัญหา`);
+                    }
+                    return;
+                } else {
+                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! ต้องพิมพ์แบบนี้:<br><b>สอน [ปัญหา] = [วิธีแก้]</b>`);
+                    return;
+                }
+            }
+
+            // 🌟 2. โหมดตอบคำถาม
+            let found = false;
+            atherBrain.forEach(knowledge => {
+                // ค้นหาแบบง่ายๆ ถ้ายาวเกิน 2 ตัวอักษรและตรงกัน
+                if (knowledge.keyword.length > 2 && text.toLowerCase().includes(knowledge.keyword.toLowerCase())) {
+                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูลเมี๊ยว!</b><br><br>${knowledge.action}`);
+                    found = true;
+                }
+            });
+
+            if (!found) {
+                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักปัญหานี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? พิมพ์บอก Ather ได้เลยว่า:<br><b>สอน ${text} = [วิธีแก้ไข]</b>`);
+            }
+        }
+
+        // เริ่มโหลดสมองตอนเปิดเว็บ
+        loadBrain();
+    </script>
+</body>
+</html>
