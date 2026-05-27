@@ -22,12 +22,33 @@
             </div>
         </div>
 
-        <!-- Chat Area -->
         <div id="chat-messages" class="flex-1 p-6 overflow-y-auto bg-slate-50 space-y-4 no-scrollbar flex flex-col">
-            <div class="flex gap-3 self-start max-w-[90%]">
-                <div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0">🐾</div>
-                <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200">
-                    โหลดสมองเสร็จแล้วเมี๊ยว! ลองพิมพ์ถามปัญหาดู หรือพิมพ์ <br><b>"สอน [ชื่อปัญหา] = [วิธีแก้]"</b><br> เพื่อสอนให้ Ather ฉลาดขึ้นได้เลยเมี๊ยว!
+            <div class="flex gap-3 self-start max-w-[90%] fade-in">
+                <div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0 shadow-sm border border-slate-300">🐾</div>
+                <div class="bg-white text-slate-800 p-5 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200 leading-relaxed">
+                    <b class="text-base">โหลดสมองเสร็จแล้วเมี๊ยว! ✨</b><br><br>
+                    เจ้านายสามารถสอนให้ Ather ฉลาดขึ้นได้ง่ายๆ โดยพิมพ์ตามรูปแบบนี้นะเมี๊ยว:<br>
+                    <div class="bg-blue-50 text-blue-700 font-bold border border-blue-200 px-3 py-2 rounded-lg mt-2 mb-3 text-center tracking-wide">
+                        สอน [หมวดหมู่] [คำถาม] = [คำตอบ]
+                    </div>
+                    
+                    <b>หมวดหมู่ 3 ห้องสมองที่มีให้เลือก:</b>
+                    <ul class="mt-1.5 space-y-1.5 text-slate-600 mb-3">
+                        <li class="flex items-start gap-2"><span class="bg-blue-100 text-blue-700 px-1.5 rounded text-[10px] font-bold mt-0.5">SOP</span> <span>สำหรับคู่มือแก้ปัญหา IT (ตอบเป็นทางการ)</span></li>
+                        <li class="flex items-start gap-2"><span class="bg-amber-100 text-amber-700 px-1.5 rounded text-[10px] font-bold mt-0.5">ADVICE</span> <span>สำหรับคำแนะนำทั่วไป (ตอบแบบนุ่มนวล)</span></li>
+                        <li class="flex items-start gap-2"><span class="bg-purple-100 text-purple-700 px-1.5 rounded text-[10px] font-bold mt-0.5">GENERAL</span> <span>สำหรับพูดคุย ทักทาย ถาม-ตอบทั่วไป</span></li>
+                    </ul>
+
+                    <b>💡 ตัวอย่างการพิมพ์สอน:</b>
+                    <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs mt-1.5 space-y-2 font-mono text-slate-700 shadow-inner">
+                        <div><span class="text-blue-600 font-bold">สอน</span> <span class="text-purple-600 font-bold">general</span> กินข้าวรึยัง = กินไฟอิ่มแล้วเมี๊ยว!</div>
+                        <div class="border-t border-slate-200 pt-2"><span class="text-blue-600 font-bold">สอน</span> <span class="text-amber-600 font-bold">advice</span> คอมช้า = ลองลบไฟล์ขยะดูนะเมี๊ยว</div>
+                        <div class="border-t border-slate-200 pt-2"><span class="text-blue-600 font-bold">สอน</span> <span class="text-blue-600 font-bold">sop</span> เน็ตหลุด = 1.เช็คสายแลน 2.รีสตาร์ทเร้าเตอร์</div>
+                    </div>
+                    
+                    <div class="mt-3 text-[11px] text-slate-400 font-medium">
+                        *หมายเหตุ: ถ้าเจ้านายลืมใส่ชื่อหมวดหมู่ Ather จะแอบเหมาว่าเป็นหมวด <b>SOP</b> ให้อัตโนมัตินะเมี๊ยว!
+                    </div>
                 </div>
             </div>
         </div>
