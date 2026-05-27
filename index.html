@@ -82,9 +82,15 @@
             appendChatMessage('user', text);
             inputEl.value = '';
 
-            // 🌟 1. โหมดเรียนรู้ (รูปแบบ: สอน คำถาม = คำตอบ)
             if (text.startsWith('สอน ')) {
-                const parts = text.substring(4).split('=');
+                let parseText = text.substring(4).trim();
+                let targetCategory = 'sop'; // Default
+
+                if (parseText.toLowerCase().startsWith('sop ')) { targetCategory = 'sop'; parseText = parseText.substring(4).trim(); }
+                else if (parseText.toLowerCase().startsWith('advice ')) { targetCategory = 'advice'; parseText = parseText.substring(7).trim(); }
+                else if (parseText.toLowerCase().startsWith('general ')) { targetCategory = 'general'; parseText = parseText.substring(8).trim(); }
+
+                const parts = parseText.split('=');
                 if (parts.length >= 2) {
                     const keyword = parts[0].trim();
                     const action = parts.slice(1).join('=').trim();
@@ -94,39 +100,39 @@
                     try {
                         await fetch(API_URL, {
                             method: 'POST',
-                            body: JSON.stringify({ keyword, action })
+                            body: JSON.stringify({ keyword: keyword, action: action, type: targetCategory })
                         });
                         
-                        // แอบเอาเข้าสมองในเว็บเลย จะได้ไม่ต้องดึงใหม่ทั้งหมด
-                        atherBrain.push({ keyword, action });
-                        appendChatMessage('bot', `✨ Ather จำเข้าสมองแล้วเมี๊ยว! ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
+                        // แอบเอาเข้าสมองในเว็บเลย
+                        atherBrain.push({ keyword: keyword, action: action, type: targetCategory });
+                        
+                        const catName = targetCategory === 'general' ? '💬 ทั่วไป' : targetCategory === 'advice' ? '💡 คำแนะนำ' : '🛠️ คู่มือ SOP';
+                        appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> แล้วเมี๊ยว! ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
                         document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
                     } catch (e) {
                         appendChatMessage('bot', `❌ จดไม่สำเร็จเมี๊ยว อินเทอร์เน็ตอาจจะมีปัญหา`);
                     }
                     return;
                 } else {
-                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! ต้องพิมพ์แบบนี้:<br><b>สอน [ปัญหา] = [วิธีแก้]</b>`);
+                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว!<br><br>ต้องพิมพ์แบบนี้:<br><b>สอน [หมวด] [ปัญหา] = [วิธีแก้]</b><br><br>💡 เช่น:<br>• สอน general หวัดดี = ดีจ้า<br>• สอน advice ลืมรหัส = ค่อยๆ นึกนะ<br>• สอน sop เน็ตหลุด = รีสตาร์ทเร้าเตอร์`);
                     return;
                 }
             }
 
-            // 🌟 2. โหมดตอบคำถาม
             let found = false;
             atherBrain.forEach(knowledge => {
-                // ค้นหาแบบง่ายๆ ถ้ายาวเกิน 2 ตัวอักษรและตรงกัน
                 if (knowledge.keyword.length > 2 && text.toLowerCase().includes(knowledge.keyword.toLowerCase())) {
-                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูลเมี๊ยว!</b><br><br>${knowledge.action}`);
+                    const typeBadge = knowledge.type === 'general' ? '[💬 ทั่วไป]' : knowledge.type === 'advice' ? '[💡 คำแนะนำ]' : '[🛠️ SOP]';
+                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${knowledge.action}`);
                     found = true;
                 }
             });
 
             if (!found) {
-                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักปัญหานี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? พิมพ์บอก Ather ได้เลยว่า:<br><b>สอน ${text} = [วิธีแก้ไข]</b>`);
+                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? พิมพ์บอกได้เลยว่า:<br><b>สอน general ${text} = [คำตอบ]</b>`);
             }
         }
 
-        // เริ่มโหลดสมองตอนเปิดเว็บ
         loadBrain();
     </script>
 </body>
