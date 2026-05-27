@@ -103,28 +103,42 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        // 🌟 ฟังก์ชันสลับคำใบ้ (Placeholder) ตามโหมดที่เลือก
+        function updateInputPlaceholder() {
+            const mode = document.getElementById('train-category').value;
+            const inputEl = document.getElementById('chat-input');
+            if (mode === 'chat') {
+                inputEl.placeholder = "พิมพ์ถามปัญหาตรงนี้เมี๊ยว...";
+                inputEl.classList.remove('border-blue-400', 'bg-blue-50');
+            } else {
+                inputEl.placeholder = "พิมพ์รูปแบบ: คำถาม = คำตอบ";
+                // ไฮไลต์สีให้รู้ว่าอยู่ในโหมดสอน
+                inputEl.classList.add('border-blue-400', 'bg-blue-50'); 
+            }
+        }
+
+        // 🤖 ฟังก์ชันหลักตอนกดส่งข้อความ
         async function handleChatSubmit() {
             const inputEl = document.getElementById('chat-input');
             const text = inputEl.value.trim();
+            const mode = document.getElementById('train-category').value; // 🌟 ดึงค่าจาก Dropdown
+            
             if (!text) return;
 
             appendChatMessage('user', text);
             inputEl.value = '';
 
-            if (text.startsWith('สอน ')) {
-                let parseText = text.substring(4).trim();
-                let targetCategory = 'sop'; // Default
-
-                if (parseText.toLowerCase().startsWith('sop ')) { targetCategory = 'sop'; parseText = parseText.substring(4).trim(); }
-                else if (parseText.toLowerCase().startsWith('advice ')) { targetCategory = 'advice'; parseText = parseText.substring(7).trim(); }
-                else if (parseText.toLowerCase().startsWith('general ')) { targetCategory = 'general'; parseText = parseText.substring(8).trim(); }
-
-                const parts = parseText.split('=');
+            // 🌟 1. เช็คว่าเป็น "โหมดสอน" หรือไม่ (ถ้าไม่ใช่ chat แปลว่าเลือกโหมดสอนอยู่)
+            if (mode !== 'chat') {
+                const parts = text.split('=');
+                
+                // ตรวจสอบว่ามีเครื่องหมาย = หรือไม่
                 if (parts.length >= 2) {
                     const keyword = parts[0].trim();
                     const action = parts.slice(1).join('=').trim();
+                    const targetCategory = mode; 
                     
-                    appendChatMessage('bot', `⏳ กำลังจดลงสมอง (Google Sheets) แป๊บนะเมี๊ยว...`);
+                    appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${targetCategory.toUpperCase()} แป๊บนะเมี๊ยว...`);
                     
                     try {
                         await fetch(API_URL, {
@@ -136,18 +150,25 @@
                         atherBrain.push({ keyword: keyword, action: action, type: targetCategory });
                         
                         const catName = targetCategory === 'general' ? '💬 ทั่วไป' : targetCategory === 'advice' ? '💡 คำแนะนำ' : '🛠️ คู่มือ SOP';
-                        appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> แล้วเมี๊ยว! ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
+                        appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> แล้วเมี๊ยว!<br>ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
                         document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
                     } catch (e) {
                         appendChatMessage('bot', `❌ จดไม่สำเร็จเมี๊ยว อินเทอร์เน็ตอาจจะมีปัญหา`);
                     }
                     return;
                 } else {
-                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว!<br><br>ต้องพิมพ์แบบนี้:<br><b>สอน [หมวด] [ปัญหา] = [วิธีแก้]</b><br><br>💡 เช่น:<br>• สอน general หวัดดี = ดีจ้า<br>• สอน advice ลืมรหัส = ค่อยๆ นึกนะ<br>• สอน sop เน็ตหลุด = รีสตาร์ทเร้าเตอร์`);
+                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! 😿<br><br>เจ้านายกำลังเลือกโหมดสอนอยู่ ต้องพิมพ์คั่นด้วยเครื่องหมาย <b>=</b> เสมอเมี๊ยว<br><br>💡 ตัวอย่าง: <b>เน็ตหลุด = รีสตาร์ทเร้าเตอร์</b>`);
                     return;
                 }
             }
 
+            // 🌟 2. ดักจับเผื่อเจ้านายเผลอพิมพ์คำว่า "สอน" แบบเก่า แต่ยังอยู่ในโหมด "คุยปกติ"
+            if (text.startsWith('สอน ')) {
+                appendChatMessage('bot', `ตอนนี้ Ather มี <b>"เมนูตัวเลือก"</b> ด้านซ้ายล่างแล้วนะเมี๊ยว! 🐾<br><br>ไม่ต้องพิมพ์คำว่า "สอน" ให้เมื่อยมือแล้ว แค่เปลี่ยนเมนูเป็นโหมดสอน แล้วพิมพ์แค่ <b>ปัญหา = วิธีแก้</b> ได้เลยเมี๊ยว!`);
+                return;
+            }
+
+            // 🌟 3. โหมด "คุยปกติ" (ตอบคำถาม)
             let found = false;
             atherBrain.forEach(knowledge => {
                 if (knowledge.keyword.length > 2 && text.toLowerCase().includes(knowledge.keyword.toLowerCase())) {
@@ -158,7 +179,7 @@
             });
 
             if (!found) {
-                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? พิมพ์บอกได้เลยว่า:<br><b>สอน general ${text} = [คำตอบ]</b>`);
+                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? เลือกเมนูซ้ายล่างเป็น <b>"สอน ..."</b> แล้วพิมพ์บอกได้เลยเมี๊ยว!`);
             }
         }
 
