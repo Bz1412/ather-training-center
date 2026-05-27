@@ -53,15 +53,23 @@
             </div>
         </div>
 
-        <!-- Input Area -->
-        <div class="p-4 bg-white border-t-2 border-slate-100 flex gap-2">
-            <input type="text" id="chat-input" placeholder="เช่น: สอน ลืมรหัสผ่าน = ให้กดปุ่ม Reset Password"
-                class="flex-1 p-3 border-2 border-slate-200 rounded-xl text-sm outline-none focus:border-slate-800"
+        <!-- Input Area (อัปเกรดมี Dropdown เลือกโหมด) -->
+        <div class="p-4 bg-white border-t-2 border-slate-100 flex gap-2 items-center">
+            <!-- 🌟 Dropdown เลือกโหมดการทำงาน -->
+            <select id="train-category" onchange="updateInputPlaceholder()"
+                class="p-3 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 font-bold text-slate-700 outline-none transition cursor-pointer w-[140px] shrink-0 appearance-none">
+                <option value="chat">💬 คุยปกติ</option>
+                <option value="sop">🛠️ สอน SOP</option>
+                <option value="advice">💡 สอน Advice</option>
+                <option value="general">💬 สอน General</option>
+            </select>
+
+            <input type="text" id="chat-input" placeholder="พิมพ์ถามปัญหาตรงนี้เมี๊ยว..."
+                class="flex-1 p-3 border-2 border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white bg-slate-50 transition"
                 onkeypress="if(event.key === 'Enter') handleChatSubmit()">
             <button onclick="handleChatSubmit()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition">ส่ง</button>
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition transform hover:scale-105 active:scale-95">ส่ง</button>
         </div>
-    </div>
 
     <script>
         // 🚨 เอา URL ที่ได้จาก Google Apps Script มาวางตรงนี้!
