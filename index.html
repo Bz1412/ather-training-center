@@ -88,11 +88,9 @@
                                  <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200 leading-relaxed">${text}</div>`;
             }
             container.appendChild(div);
-            // เลื่อนจอลงอัตโนมัติ
             setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
         }
 
-        // 🌟 ฟังก์ชันสลับคำใบ้ตามโหมดที่เลือก
         function updateInputPlaceholder() {
             const mode = document.getElementById('train-category').value;
             const inputEl = document.getElementById('chat-input');
@@ -105,7 +103,6 @@
             }
         }
 
-        // 🤖 ฟังก์ชันหลักที่แก้ไขให้ส่งแบบ "เข้าแถวทีละรายการ" (ป้องกันข้อมูลตกหล่น)
         async function handleChatSubmit() {
             const inputEl = document.getElementById('chat-input');
             const text = inputEl.value.trim();
@@ -123,16 +120,14 @@
                     return;
                 }
 
-                // แสดงข้อความที่ผู้ใช้พิมพ์
                 appendChatMessage('user', text.replace(/\n/g, '<br>'));
                 inputEl.value = '';
 
-                appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${mode.toUpperCase()} จำนวน <b>${validLines.length}</b> เรื่อง...<br><span class="text-xs text-slate-500">(Ather จะค่อยๆ ทยอยจดทีละข้อเพื่อไม่ให้ข้อมูลหล่นหายนะเมี๊ยว รอแป๊บนึงน้า)</span>`);
+                appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${mode.toUpperCase()} จำนวน <b>${validLines.length}</b> เรื่อง...<br><span class="text-xs text-slate-500">(ทยอยจดทีละข้อนะเมี๊ยว)</span>`);
                 
                 let successCount = 0;
                 let failCount = 0;
 
-                // 🌟 หัวใจสำคัญ: ใช้ for...of เพื่อรอให้ยิงสำเร็จทีละอันตามลำดับ
                 for (const line of validLines) {
                     const parts = line.split('=');
                     const keyword = parts[0].trim();
@@ -155,7 +150,6 @@
                     } catch (e) {
                         failCount++;
                     }
-                    // ⏱️ หน่วงเวลา 0.5 วินาที ก่อนส่งแถวถัดไปให้ Google Sheets ได้พักหายใจ
                     await new Promise(resolve => setTimeout(resolve, 500));
                 }
                 
@@ -163,7 +157,6 @@
                 document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
                 
             } else {
-                // 🌟 2. โหมดคุยปกติ (ค้นหาคำตอบ)
                 appendChatMessage('user', text);
                 inputEl.value = '';
 
@@ -172,16 +165,36 @@
                     return;
                 }
 
-                let found = false;
-                atherBrain.forEach(k => {
-                    if (k.keyword.length > 2 && text.toLowerCase().includes(k.keyword.toLowerCase())) {
-                        const typeBadge = k.type === 'general' ? '[💬 ทั่วไป]' : k.type === 'advice' ? '[💡 คำแนะนำ]' : '[🛠️ SOP]';
-                        appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${k.action.replace(/\n/g, '<br>')}`);
-                        found = true;
-                    }
-                });
+                const matches = atherBrain.filter(k => k.keyword.length > 2 && text.toLowerCase().includes(k.keyword.toLowerCase()));
 
-                if (!found) {
+                if (matches.length > 0) {
+                    let responseHtml = '';
+
+                    const generalMatches = matches.filter(k => k.type === 'general');
+                    if (generalMatches.length > 0) {
+                        const randomGeneral = generalMatches[Math.floor(Math.random() * generalMatches.length)];
+                        responseHtml += randomGeneral.action.replace(/\n/g, '<br>') + '<br><br>';
+                    }
+
+                    const otherMatches = matches.filter(k => k.type !== 'general');
+                    if (otherMatches.length > 0) {
+                        responseHtml += `<div class="text-sm font-bold text-slate-700 mb-2 mt-1">🔍 Ather เจอวิธีแก้ปัญหา ${otherMatches.length} วิธีเมี๊ยว:</div>`;
+                        otherMatches.forEach((k, index) => {
+                            const typeBadge = k.type === 'advice' ? '💡 คำแนะนำ' : '🛠️ SOP';
+                            responseHtml += `
+                                <div class="bg-blue-50 border border-blue-200 p-3 rounded-xl mb-3 shadow-sm">
+                                    <div class="text-[11px] text-blue-600 font-bold mb-1 border-b border-blue-100 pb-1">
+                                        วิธีที่ ${index + 1} [หมวด: ${typeBadge}]
+                                    </div>
+                                    <div class="text-slate-700 leading-relaxed mt-1.5">
+                                        ${k.action.replace(/\n/g, '<br>')}
+                                    </div>
+                                </div>`;
+                        });
+                    }
+
+                    appendChatMessage('bot', responseHtml.trim());
+                } else {
                     appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว... ลองสอน Ather ดูไหมเมี๊ยว?`);
                 }
             }
