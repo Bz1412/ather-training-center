@@ -135,7 +135,6 @@
                 let successCount = 0;
                 let failCount = 0;
 
-                // ยิง API ไปที่ Google Sheets แบบขนาน (ช่วยให้บันทึกหลายอันได้เร็วขึ้น)
                 const promises = validLines.map(async (line) => {
                     const parts = line.split('=');
                     const keyword = parts[0].trim();
@@ -144,11 +143,13 @@
                     
                     try {
                         await fetch(API_URL, {
-                            method: 'POST',
-                            body: JSON.stringify({ keyword: keyword, action: action, type: targetCategory })
-                        });
-                        
-                        // อัปเดตสมองจำลองบนหน้าเว็บ
+    method: 'POST',
+    headers: {
+        "Content-Type": "text/plain;charset=utf-8"
+    },
+    body: JSON.stringify({ keyword: keyword, action: action, type: targetCategory })
+});
+
                         atherBrain.push({ keyword: keyword, action: action, type: targetCategory });
                         successCount++;
                     } catch (e) {
