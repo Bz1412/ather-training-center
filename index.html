@@ -105,7 +105,7 @@
             }
         }
 
-        // 🤖 ฟังก์ชันหลักตอนกดส่งข้อความ (รองรับ Batch Training หลายรายการ)
+        // 🤖 ฟังก์ชันหลักที่แก้ไขให้ส่งแบบ "เข้าแถวทีละรายการ" (ป้องกันข้อมูลตกหล่น)
         async function handleChatSubmit() {
             const inputEl = document.getElementById('chat-input');
             const text = inputEl.value.trim();
@@ -113,77 +113,77 @@
             
             if (!text) return;
 
-            // ตรวจสอบว่าเป็นการพิมพ์หลายบรรทัดหรือไม่ เพื่อจัดรูปแบบในช่องแชท
-            const isMultiLine = text.includes('\n');
-            const userDisplayText = isMultiLine ? '<i>[สอนแบบชุดข้อมูล...]</i><br>' + text.replace(/\n/g, '<br>') : text;
-            appendChatMessage('user', userDisplayText);
-            inputEl.value = '';
-
-            // 🌟 1. เช็คว่าเป็น "โหมดสอน" หรือไม่
+            // 🌟 1. โหมดสอน (จดจำข้อมูล)
             if (mode !== 'chat') {
-                // ตัดแบ่งข้อความแต่ละบรรทัด (ข้ามบรรทัดว่าง)
                 const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
                 const validLines = lines.filter(l => l.includes('='));
 
                 if (validLines.length === 0) {
-                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! 😿<br><br>อย่าลืมใส่เครื่องหมาย <b>=</b> คั่นระหว่างคำถามและคำตอบเมี๊ยว`);
+                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! 😿 ตรวจสอบเครื่องหมาย = ให้ดีนะ`);
                     return;
                 }
 
-                appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${mode.toUpperCase()} จำนวน <b>${validLines.length}</b> เรื่อง แป๊บนะเมี๊ยว...`);
+                // แสดงข้อความที่ผู้ใช้พิมพ์
+                appendChatMessage('user', text.replace(/\n/g, '<br>'));
+                inputEl.value = '';
+
+                appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${mode.toUpperCase()} จำนวน <b>${validLines.length}</b> เรื่อง...<br><span class="text-xs text-slate-500">(Ather จะค่อยๆ ทยอยจดทีละข้อเพื่อไม่ให้ข้อมูลหล่นหายนะเมี๊ยว รอแป๊บนึงน้า)</span>`);
                 
                 let successCount = 0;
                 let failCount = 0;
 
-                const promises = validLines.map(async (line) => {
+                // 🌟 หัวใจสำคัญ: ใช้ for...of เพื่อรอให้ยิงสำเร็จทีละอันตามลำดับ
+                for (const line of validLines) {
                     const parts = line.split('=');
                     const keyword = parts[0].trim();
                     const action = parts.slice(1).join('=').trim();
-                    const targetCategory = mode;
                     
                     try {
-                        await fetch(API_URL, {
-    method: 'POST',
-    headers: {
-        "Content-Type": "text/plain;charset=utf-8"
-    },
-    body: JSON.stringify({ keyword: keyword, action: action, type: targetCategory })
-});
-
-                        atherBrain.push({ keyword: keyword, action: action, type: targetCategory });
-                        successCount++;
+                        const response = await fetch(API_URL, {
+                            method: 'POST',
+                            headers: { "Content-Type": "text/plain;charset=utf-8" },
+                            body: JSON.stringify({ keyword: keyword, action: action, type: mode })
+                        });
+                        
+                        const result = await response.json();
+                        if (result.status === 'success') {
+                            atherBrain.push({ keyword: keyword, action: action, type: mode });
+                            successCount++;
+                        } else {
+                            failCount++;
+                        }
                     } catch (e) {
                         failCount++;
                     }
+                    // ⏱️ หน่วงเวลา 0.5 วินาที ก่อนส่งแถวถัดไปให้ Google Sheets ได้พักหายใจ
+                    await new Promise(resolve => setTimeout(resolve, 500));
+                }
+                
+                appendChatMessage('bot', `✨ สอนเสร็จแล้วเมี๊ยว!<br>✅ สำเร็จ: <b>${successCount} เรื่อง</b><br>${failCount > 0 ? `❌ ผิดพลาด: ${failCount} เรื่อง` : ''}`);
+                document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
+                
+            } else {
+                // 🌟 2. โหมดคุยปกติ (ค้นหาคำตอบ)
+                appendChatMessage('user', text);
+                inputEl.value = '';
+
+                if (text.startsWith('สอน ')) {
+                    appendChatMessage('bot', `ตอนนี้ Ather มี <b>"เมนูตัวเลือก"</b> ด้านซ้ายล่างแล้วนะเมี๊ยว! แค่เปลี่ยนเมนูเป็นโหมดสอน แล้วพิมพ์แค่ <b>ปัญหา = วิธีแก้</b> ได้เลย`);
+                    return;
+                }
+
+                let found = false;
+                atherBrain.forEach(k => {
+                    if (k.keyword.length > 2 && text.toLowerCase().includes(k.keyword.toLowerCase())) {
+                        const typeBadge = k.type === 'general' ? '[💬 ทั่วไป]' : k.type === 'advice' ? '[💡 คำแนะนำ]' : '[🛠️ SOP]';
+                        appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${k.action.replace(/\n/g, '<br>')}`);
+                        found = true;
+                    }
                 });
 
-                // รอให้ยิง API ครบทุกบรรทัด
-                await Promise.all(promises);
-                
-                const catName = mode === 'general' ? '💬 ทั่วไป' : mode === 'advice' ? '💡 คำแนะนำ' : '🛠️ คู่มือ SOP';
-                appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> สำเร็จแล้วเมี๊ยว!<br><br>✅ สำเร็จ: <b>${successCount} เรื่อง</b><br>${failCount > 0 ? `❌ ผิดพลาด: ${failCount} เรื่อง (เน็ตอาจสะดุด)` : ''}`);
-                document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
-                return;
-            }
-
-            // 🌟 2. ดักจับเผื่อเจ้านายเผลอพิมพ์คำว่า "สอน" แบบเก่า
-            if (text.startsWith('สอน ')) {
-                appendChatMessage('bot', `ตอนนี้ Ather มี <b>"เมนูตัวเลือก"</b> ด้านซ้ายล่างแล้วนะเมี๊ยว! 🐾<br><br>ไม่ต้องพิมพ์คำว่า "สอน" ให้เมื่อยมือแล้ว แค่เปลี่ยนเมนูเป็นโหมดสอน แล้วพิมพ์แค่ <b>ปัญหา = วิธีแก้</b> ได้เลยเมี๊ยว!`);
-                return;
-            }
-
-            // 🌟 3. โหมด "คุยปกติ" (ตอบคำถาม)
-            let found = false;
-            atherBrain.forEach(knowledge => {
-                if (knowledge.keyword.length > 2 && text.toLowerCase().includes(knowledge.keyword.toLowerCase())) {
-                    const typeBadge = knowledge.type === 'general' ? '[💬 ทั่วไป]' : knowledge.type === 'advice' ? '[💡 คำแนะนำ]' : '[🛠️ SOP]';
-                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${knowledge.action.replace(/\n/g, '<br>')}`);
-                    found = true;
+                if (!found) {
+                    appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว... ลองสอน Ather ดูไหมเมี๊ยว?`);
                 }
-            });
-
-            if (!found) {
-                appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว...<br><br>เจ้านายสอนหน่อยได้ไหม? เลือกเมนูซ้ายล่างเป็น <b>"สอน ..."</b> แล้วพิมพ์บอกได้เลยเมี๊ยว!`);
             }
         }
 
