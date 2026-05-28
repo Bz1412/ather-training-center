@@ -165,7 +165,38 @@
                     return;
                 }
 
-                const matches = atherBrain.filter(k => k.keyword.length > 2 && text.toLowerCase().includes(k.keyword.toLowerCase()));
+                const userText = text.toLowerCase();
+
+                const stopWords = ['ขอ', 'วิธี', 'การ', 'แก้', 'ปัญหา', 'หน่อย', 'ทำไง', 'ทำยังไง', 'คืออะไร', 'ครับ', 'ค่ะ', 'เมี๊ยว'];
+                let searchTerms = userText.split(' ').filter(word => !stopWords.includes(word) && word.trim().length > 1);
+
+                if (searchTerms.length === 0) {
+                    searchTerms = [userText];
+                }
+น
+                let scoredResults = atherBrain.map(k => {
+                    let score = 0;
+                    const dbKeyword = k.keyword.toLowerCase();
+
+                    if (userText.includes(dbKeyword)) {
+                        score += 10;
+                    }
+
+                    searchTerms.forEach(term => {
+                        if (dbKeyword.includes(term)) {
+                            score += 2;
+                        }
+                    });
+
+                    return { ...k, score: score };
+                });
+
+                let matches = scoredResults.filter(k => k.score > 0).sort((a, b) => b.score - a.score);
+
+                if (matches.length > 0) {
+                    const topScore = matches[0].score;
+                    matches = matches.filter(k => k.score >= topScore - 2); 
+                }
 
                 if (matches.length > 0) {
                     let responseHtml = '';
@@ -178,7 +209,7 @@
 
                     const otherMatches = matches.filter(k => k.type !== 'general');
                     if (otherMatches.length > 0) {
-                        responseHtml += `<div class="text-sm font-bold text-slate-700 mb-2 mt-1">🔍 Ather เจอวิธีแก้ปัญหา ${otherMatches.length} วิธีเมี๊ยว:</div>`;
+                        responseHtml += `<div class="text-sm font-bold text-slate-700 mb-2 mt-1">🔍 Ather วิเคราะห์แล้วเจอวิธีแก้ปัญหาเมี๊ยว:</div>`;
                         otherMatches.forEach((k, index) => {
                             const typeBadge = k.type === 'advice' ? '💡 คำแนะนำ' : '🛠️ SOP';
                             responseHtml += `
@@ -186,16 +217,19 @@
                                     <div class="text-[11px] text-blue-600 font-bold mb-1 border-b border-blue-100 pb-1">
                                         วิธีที่ ${index + 1} [หมวด: ${typeBadge}]
                                     </div>
+                                    <div class="text-[12px] text-slate-500 mb-1">
+                                        (จับประเด็นจาก: ${k.keyword})
+                                    </div>
                                     <div class="text-slate-700 leading-relaxed mt-1.5">
                                         ${k.action.replace(/\n/g, '<br>')}
                                     </div>
                                 </div>`;
                         });
                     }
-
+                    
                     appendChatMessage('bot', responseHtml.trim());
                 } else {
-                    appendChatMessage('bot', `😿 Ather ยังไม่รู้จักคำนี้เลยเมี๊ยว... ลองสอน Ather ดูไหมเมี๊ยว?`);
+                    appendChatMessage('bot', `😿 Ather พยายามวิเคราะห์ประเด็นแล้ว แต่ยังไม่รู้จักคำนี้เลยเมี๊ยว... ลองสอน Ather ดูไหมเมี๊ยว?`);
                 }
             }
         }
