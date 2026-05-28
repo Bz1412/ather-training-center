@@ -168,7 +168,7 @@
 
                 const userText = text.toLowerCase();
 
-                const stopWords = ['ขอ', 'วิธี', 'การ', 'แก้', 'ปัญหา', 'หน่อย', 'ทำไง', 'ทำยังไง', 'คืออะไร', 'ครับ', 'ค่ะ', 'เมี๊ยว'];
+                const stopWords = ['ขอ', 'วิธี', 'การ', 'แก้', 'ปัญหา', 'หน่อย', 'ทำไง', 'ทำยังไง', 'คืออะไร', 'ครับ', 'ค่ะ', 'เมี๊ยว','ช่วย', 'แนะนำ', 'บอก', 'อยากได้', 'มีไหม'];
                 let searchTerms = userText.split(' ').filter(word => !stopWords.includes(word) && word.trim().length > 1);
 
                 if (searchTerms.length === 0) {
