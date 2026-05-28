@@ -12,9 +12,7 @@
 </head>
 <body class="bg-slate-800 h-screen flex justify-center items-center font-sans">
 
-    <!-- หน้าต่างศูนย์ฝึก Ather -->
     <div class="w-full max-w-2xl bg-white rounded-3xl shadow-2xl flex flex-col h-[80vh] overflow-hidden">
-        <!-- Header -->
         <div class="bg-slate-900 text-white p-5 flex justify-between items-center shadow-md">
             <div>
                 <h2 class="text-xl font-black">🧠 ศูนย์ฝึกสมอง Ather AI</h2>
@@ -27,35 +25,24 @@
                 <div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0 shadow-sm border border-slate-300">🐾</div>
                 <div class="bg-white text-slate-800 p-5 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200 leading-relaxed">
                     <b class="text-base">โหลดสมองเสร็จแล้วเมี๊ยว! ✨</b><br><br>
-                    เจ้านายสามารถสอนให้ Ather ฉลาดขึ้นได้ง่ายๆ โดยพิมพ์ตามรูปแบบนี้นะเมี๊ยว:<br>
+                    เจ้านายสามารถสอนให้ Ather ฉลาดขึ้นได้ง่ายๆ โดยเลือกหมวดหมู่ที่ต้องการด้านล่าง แล้วพิมพ์รูปแบบ:<br>
                     <div class="bg-blue-50 text-blue-700 font-bold border border-blue-200 px-3 py-2 rounded-lg mt-2 mb-3 text-center tracking-wide">
-                        สอน [หมวดหมู่] [คำถาม] = [คำตอบ]
+                        [คำถาม] = [คำตอบ]
                     </div>
                     
-                    <b>หมวดหมู่ 3 ห้องสมองที่มีให้เลือก:</b>
-                    <ul class="mt-1.5 space-y-1.5 text-slate-600 mb-3">
-                        <li class="flex items-start gap-2"><span class="bg-blue-100 text-blue-700 px-1.5 rounded text-[10px] font-bold mt-0.5">SOP</span> <span>สำหรับคู่มือแก้ปัญหา IT (ตอบเป็นทางการ)</span></li>
-                        <li class="flex items-start gap-2"><span class="bg-amber-100 text-amber-700 px-1.5 rounded text-[10px] font-bold mt-0.5">ADVICE</span> <span>สำหรับคำแนะนำทั่วไป (ตอบแบบนุ่มนวล)</span></li>
-                        <li class="flex items-start gap-2"><span class="bg-purple-100 text-purple-700 px-1.5 rounded text-[10px] font-bold mt-0.5">GENERAL</span> <span>สำหรับพูดคุย ทักทาย ถาม-ตอบทั่วไป</span></li>
-                    </ul>
-
-                    <b>💡 ตัวอย่างการพิมพ์สอน:</b>
+                    <b>💡 พิเศษ! ตอนนี้รองรับการสอนทีละหลายรายการแล้วนะเมี๊ยว:</b>
                     <div class="bg-slate-50 p-3 rounded-lg border border-slate-200 text-xs mt-1.5 space-y-2 font-mono text-slate-700 shadow-inner">
-                        <div><span class="text-blue-600 font-bold">สอน</span> <span class="text-purple-600 font-bold">general</span> กินข้าวรึยัง = กินไฟอิ่มแล้วเมี๊ยว!</div>
-                        <div class="border-t border-slate-200 pt-2"><span class="text-blue-600 font-bold">สอน</span> <span class="text-amber-600 font-bold">advice</span> คอมช้า = ลองลบไฟล์ขยะดูนะเมี๊ยว</div>
-                        <div class="border-t border-slate-200 pt-2"><span class="text-blue-600 font-bold">สอน</span> <span class="text-blue-600 font-bold">sop</span> เน็ตหลุด = 1.เช็คสายแลน 2.รีสตาร์ทเร้าเตอร์</div>
-                    </div>
-                    
-                    <div class="mt-3 text-[11px] text-slate-400 font-medium">
-                        *หมายเหตุ: ถ้าเจ้านายลืมใส่ชื่อหมวดหมู่ Ather จะแอบเหมาว่าเป็นหมวด <b>SOP</b> ให้อัตโนมัตินะเมี๊ยว!
+                        <div>สามารถคัดลอกหลายๆ บรรทัดมาวางได้เลย เช่น:</div>
+                        <div class="text-blue-600 font-bold">คอมช้า = ลองลบไฟล์ขยะดูนะเมี๊ยว</div>
+                        <div class="text-blue-600 font-bold">เน็ตหลุด = รีสตาร์ทเร้าเตอร์</div>
+                        <div class="text-blue-600 font-bold">เมาส์ค้าง = ถอดสายเสียบใหม่</div>
+                        <div class="mt-2 text-slate-500">*กด Shift + Enter เพื่อขึ้นบรรทัดใหม่ในช่องแชทนะเมี๊ยว</div>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Input Area (อัปเกรดมี Dropdown เลือกโหมด) -->
         <div class="p-4 bg-white border-t-2 border-slate-100 flex gap-2 items-center">
-            <!-- 🌟 Dropdown เลือกโหมดการทำงาน -->
             <select id="train-category" onchange="updateInputPlaceholder()"
                 class="p-3 border-2 border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 bg-slate-50 font-bold text-slate-700 outline-none transition cursor-pointer w-[140px] shrink-0 appearance-none">
                 <option value="chat">💬 คุยปกติ</option>
@@ -64,11 +51,12 @@
                 <option value="general">💬 สอน General</option>
             </select>
 
-            <input type="text" id="chat-input" placeholder="พิมพ์ถามปัญหาตรงนี้เมี๊ยว..."
-                class="flex-1 p-3 border-2 border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white bg-slate-50 transition"
-                onkeypress="if(event.key === 'Enter') handleChatSubmit()">
+            <textarea id="chat-input" placeholder="พิมพ์ถามปัญหาตรงนี้เมี๊ยว..." rows="2"
+                class="flex-1 p-3 border-2 border-slate-200 rounded-xl text-sm outline-none focus:border-blue-500 focus:bg-white bg-slate-50 transition resize-y no-scrollbar"
+                onkeydown="if(event.key === 'Enter' && !event.shiftKey) { event.preventDefault(); handleChatSubmit(); }"></textarea>
+            
             <button onclick="handleChatSubmit()"
-                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition transform hover:scale-105 active:scale-95">ส่ง</button>
+                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl text-sm font-bold shadow-md transition transform hover:scale-105 active:scale-95 h-[52px]">ส่ง</button>
         </div>
 
     <script>
@@ -93,17 +81,18 @@
             const div = document.createElement('div');
             if (sender === 'user') {
                 div.className = 'flex gap-3 self-end max-w-[85%]';
-                div.innerHTML = `<div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-sm text-sm shadow-sm">${text}</div>`;
+                div.innerHTML = `<div class="bg-blue-600 text-white p-4 rounded-2xl rounded-tr-sm text-sm shadow-sm leading-relaxed">${text}</div>`;
             } else {
                 div.className = 'flex gap-3 self-start max-w-[90%]';
                 div.innerHTML = `<div class="w-10 h-10 rounded-full bg-slate-200 flex justify-center items-center text-xl shrink-0">🐾</div>
-                                 <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200">${text}</div>`;
+                                 <div class="bg-white text-slate-800 p-4 rounded-2xl rounded-tl-sm text-sm shadow-sm border border-slate-200 leading-relaxed">${text}</div>`;
             }
             container.appendChild(div);
-            container.scrollTop = container.scrollHeight;
+            // เลื่อนจอลงอัตโนมัติ
+            setTimeout(() => { container.scrollTop = container.scrollHeight; }, 100);
         }
 
-        // 🌟 ฟังก์ชันสลับคำใบ้ (Placeholder) ตามโหมดที่เลือก
+        // 🌟 ฟังก์ชันสลับคำใบ้ตามโหมดที่เลือก
         function updateInputPlaceholder() {
             const mode = document.getElementById('train-category').value;
             const inputEl = document.getElementById('chat-input');
@@ -111,34 +100,47 @@
                 inputEl.placeholder = "พิมพ์ถามปัญหาตรงนี้เมี๊ยว...";
                 inputEl.classList.remove('border-blue-400', 'bg-blue-50');
             } else {
-                inputEl.placeholder = "พิมพ์รูปแบบ: คำถาม = คำตอบ";
-                // ไฮไลต์สีให้รู้ว่าอยู่ในโหมดสอน
+                inputEl.placeholder = "พิมพ์รูปแบบ:\nคำถาม1 = คำตอบ1\nคำถาม2 = คำตอบ2";
                 inputEl.classList.add('border-blue-400', 'bg-blue-50'); 
             }
         }
 
-        // 🤖 ฟังก์ชันหลักตอนกดส่งข้อความ
+        // 🤖 ฟังก์ชันหลักตอนกดส่งข้อความ (รองรับ Batch Training หลายรายการ)
         async function handleChatSubmit() {
             const inputEl = document.getElementById('chat-input');
             const text = inputEl.value.trim();
-            const mode = document.getElementById('train-category').value; // 🌟 ดึงค่าจาก Dropdown
+            const mode = document.getElementById('train-category').value; 
             
             if (!text) return;
 
-            appendChatMessage('user', text);
+            // ตรวจสอบว่าเป็นการพิมพ์หลายบรรทัดหรือไม่ เพื่อจัดรูปแบบในช่องแชท
+            const isMultiLine = text.includes('\n');
+            const userDisplayText = isMultiLine ? '<i>[สอนแบบชุดข้อมูล...]</i><br>' + text.replace(/\n/g, '<br>') : text;
+            appendChatMessage('user', userDisplayText);
             inputEl.value = '';
 
-            // 🌟 1. เช็คว่าเป็น "โหมดสอน" หรือไม่ (ถ้าไม่ใช่ chat แปลว่าเลือกโหมดสอนอยู่)
+            // 🌟 1. เช็คว่าเป็น "โหมดสอน" หรือไม่
             if (mode !== 'chat') {
-                const parts = text.split('=');
+                // ตัดแบ่งข้อความแต่ละบรรทัด (ข้ามบรรทัดว่าง)
+                const lines = text.split('\n').map(l => l.trim()).filter(l => l.length > 0);
+                const validLines = lines.filter(l => l.includes('='));
+
+                if (validLines.length === 0) {
+                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! 😿<br><br>อย่าลืมใส่เครื่องหมาย <b>=</b> คั่นระหว่างคำถามและคำตอบเมี๊ยว`);
+                    return;
+                }
+
+                appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${mode.toUpperCase()} จำนวน <b>${validLines.length}</b> เรื่อง แป๊บนะเมี๊ยว...`);
                 
-                // ตรวจสอบว่ามีเครื่องหมาย = หรือไม่
-                if (parts.length >= 2) {
+                let successCount = 0;
+                let failCount = 0;
+
+                // ยิง API ไปที่ Google Sheets แบบขนาน (ช่วยให้บันทึกหลายอันได้เร็วขึ้น)
+                const promises = validLines.map(async (line) => {
+                    const parts = line.split('=');
                     const keyword = parts[0].trim();
                     const action = parts.slice(1).join('=').trim();
-                    const targetCategory = mode; 
-                    
-                    appendChatMessage('bot', `⏳ กำลังจดลงสมองหมวด ${targetCategory.toUpperCase()} แป๊บนะเมี๊ยว...`);
+                    const targetCategory = mode;
                     
                     try {
                         await fetch(API_URL, {
@@ -146,23 +148,24 @@
                             body: JSON.stringify({ keyword: keyword, action: action, type: targetCategory })
                         });
                         
-                        // แอบเอาเข้าสมองในเว็บเลย
+                        // อัปเดตสมองจำลองบนหน้าเว็บ
                         atherBrain.push({ keyword: keyword, action: action, type: targetCategory });
-                        
-                        const catName = targetCategory === 'general' ? '💬 ทั่วไป' : targetCategory === 'advice' ? '💡 คำแนะนำ' : '🛠️ คู่มือ SOP';
-                        appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> แล้วเมี๊ยว!<br>ต่อไปถ้าใครถามเรื่อง <b>"${keyword}"</b> จะตอบให้ทันทีเลย 🐾`);
-                        document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
+                        successCount++;
                     } catch (e) {
-                        appendChatMessage('bot', `❌ จดไม่สำเร็จเมี๊ยว อินเทอร์เน็ตอาจจะมีปัญหา`);
+                        failCount++;
                     }
-                    return;
-                } else {
-                    appendChatMessage('bot', `รูปแบบการสอนผิดนะเมี๊ยว! 😿<br><br>เจ้านายกำลังเลือกโหมดสอนอยู่ ต้องพิมพ์คั่นด้วยเครื่องหมาย <b>=</b> เสมอเมี๊ยว<br><br>💡 ตัวอย่าง: <b>เน็ตหลุด = รีสตาร์ทเร้าเตอร์</b>`);
-                    return;
-                }
+                });
+
+                // รอให้ยิง API ครบทุกบรรทัด
+                await Promise.all(promises);
+                
+                const catName = mode === 'general' ? '💬 ทั่วไป' : mode === 'advice' ? '💡 คำแนะนำ' : '🛠️ คู่มือ SOP';
+                appendChatMessage('bot', `✨ Ather จำเข้าสมองหมวด <b>${catName}</b> สำเร็จแล้วเมี๊ยว!<br><br>✅ สำเร็จ: <b>${successCount} เรื่อง</b><br>${failCount > 0 ? `❌ ผิดพลาด: ${failCount} เรื่อง (เน็ตอาจสะดุด)` : ''}`);
+                document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
+                return;
             }
 
-            // 🌟 2. ดักจับเผื่อเจ้านายเผลอพิมพ์คำว่า "สอน" แบบเก่า แต่ยังอยู่ในโหมด "คุยปกติ"
+            // 🌟 2. ดักจับเผื่อเจ้านายเผลอพิมพ์คำว่า "สอน" แบบเก่า
             if (text.startsWith('สอน ')) {
                 appendChatMessage('bot', `ตอนนี้ Ather มี <b>"เมนูตัวเลือก"</b> ด้านซ้ายล่างแล้วนะเมี๊ยว! 🐾<br><br>ไม่ต้องพิมพ์คำว่า "สอน" ให้เมื่อยมือแล้ว แค่เปลี่ยนเมนูเป็นโหมดสอน แล้วพิมพ์แค่ <b>ปัญหา = วิธีแก้</b> ได้เลยเมี๊ยว!`);
                 return;
@@ -173,7 +176,7 @@
             atherBrain.forEach(knowledge => {
                 if (knowledge.keyword.length > 2 && text.toLowerCase().includes(knowledge.keyword.toLowerCase())) {
                     const typeBadge = knowledge.type === 'general' ? '[💬 ทั่วไป]' : knowledge.type === 'advice' ? '[💡 คำแนะนำ]' : '[🛠️ SOP]';
-                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${knowledge.action}`);
+                    appendChatMessage('bot', `🔍 <b>Ather เจอข้อมูล ${typeBadge} เมี๊ยว!</b><br><br>${knowledge.action.replace(/\n/g, '<br>')}`);
                     found = true;
                 }
             });
