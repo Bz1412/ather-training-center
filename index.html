@@ -157,6 +157,7 @@
                 document.getElementById('status-text').innerHTML = `🟢 สมองพร้อมใช้งาน (มีความรู้ ${atherBrain.length} เรื่อง)`;
                 
             } else {
+                // 🌟 2. โหมดคุยปกติ (ค้นหาคำตอบ)
                 appendChatMessage('user', text);
                 inputEl.value = '';
 
@@ -173,7 +174,8 @@
                 if (searchTerms.length === 0) {
                     searchTerms = [userText];
                 }
-น
+
+                // 🔍 สเต็ปที่ 2: ให้คะแนนความแม่นยำ
                 let scoredResults = atherBrain.map(k => {
                     let score = 0;
                     const dbKeyword = k.keyword.toLowerCase();
@@ -191,6 +193,7 @@
                     return { ...k, score: score };
                 });
 
+                // 🔍 สเต็ปที่ 3: คัดเอาเฉพาะอันที่เกี่ยวข้องกันจริงๆ
                 let matches = scoredResults.filter(k => k.score > 0).sort((a, b) => b.score - a.score);
 
                 if (matches.length > 0) {
@@ -198,6 +201,7 @@
                     matches = matches.filter(k => k.score >= topScore - 2); 
                 }
 
+                // 📢 สเต็ปที่ 4: แสดงผลคำตอบ
                 if (matches.length > 0) {
                     let responseHtml = '';
 
